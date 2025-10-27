@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { Button } from 'react-bootstrap'
 import { DateTime } from "luxon";
 import ReservationDayTable from './ReservationDayTable';
+import { getAll } from '../services/reservations';
 
 interface Props {
   sauna: string
@@ -10,10 +11,24 @@ interface Props {
 
 const DAYS_IN_WEEK = 7
 
+interface Reservation {
+    Id: string,
+    Date: string
+}
+
 const Calendar = ({sauna}: Props) => {
     const [currentDate, setCurrentDate ] = useState<DateTime<true>>(DateTime.now().startOf('week'))
     const weekdays = ['Ma', 'Ti', 'Ke', 'To', 'Pe', 'La', 'Su']
-    console.log(currentDate)
+    const [reservations, setReservations] = useState<Reservation[]>([]);
+    // console.log(currentDate)
+
+    useEffect(() => {
+        const getReservations = async () => {
+            const allReservations = await getAll("3")
+            setReservations(allReservations)
+        }
+        getReservations()
+    }, []);
 
     const dateFormatter = (count: number) => {
         const dateNow = currentDate.plus({days: count}).toString()
@@ -43,7 +58,7 @@ const Calendar = ({sauna}: Props) => {
         <h2>{sauna} varaukset</h2>
         <div className="d-flex flex-column flex-md-row">
             {Array.from({ length: DAYS_IN_WEEK }).map((_, index) => {
-                return <ReservationDayTable key={index} date={`${weekdays[index]} ${dateFormatter(index) ?? "?"}`} />
+                return <ReservationDayTable key={index} date={`${weekdays[index]} ${dateFormatter(index) ?? "?"}`} reservations={reservations} />
             })}
         </div>
 
