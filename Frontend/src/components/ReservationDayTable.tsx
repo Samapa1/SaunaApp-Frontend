@@ -1,5 +1,7 @@
 import React from "react";
-import { Container, Row } from "react-bootstrap";
+import { Container, Row, Button } from "react-bootstrap";
+
+import { create } from "../services/reservations";
 
 const FIRST_HOUR = 17;
 const LAST_HOUR = 22;
@@ -7,6 +9,25 @@ const LAST_HOUR = 22;
 interface Reservation {
     Id: string,
     Date: string
+}
+
+const makeReservation = async () => {
+    console.log("making reservation")
+    const reservationData = {
+        "sauna": "3",
+        "date": "07-11-2025-20"
+    }
+
+    const myReservation = await create(reservationData)
+    console.log(myReservation)
+}
+
+const btn = {
+    // backgroundColor: '#2C3034',
+    backgroundColor: 'transparent',
+	color: 'white',
+    border: 'none',
+    width: '5%',
 }
 
 const checkAvailability = (hour: string, reservations: Array<Reservation>) => {
@@ -20,7 +41,7 @@ const checkAvailability = (hour: string, reservations: Array<Reservation>) => {
         return "varattu"
     }
     else {
-        return "vapaa"
+        return <Button style={btn} onClick={() => makeReservation()}>vapaa</Button>
     }
 }
 
