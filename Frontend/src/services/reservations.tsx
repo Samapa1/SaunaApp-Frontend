@@ -13,7 +13,6 @@ export const getAll = async (sauna: string) => {
 };
 
 export const create = async (reservation: Reservation) => {
-  console.log(reservation)
   const response = await axios.post(baseUrl + `/reservation`, reservation);
   return response.data;
 };

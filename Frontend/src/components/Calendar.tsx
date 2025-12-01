@@ -20,12 +20,16 @@ const Calendar = ({sauna}: Props) => {
     const [currentDate, setCurrentDate ] = useState<DateTime<true>>(DateTime.now().startOf('week'))
     const weekdays = ['Ma', 'Ti', 'Ke', 'To', 'Pe', 'La', 'Su']
     const [reservations, setReservations] = useState<Reservation[]>([]);
-    // console.log(currentDate)
 
     useEffect(() => {
         const getReservations = async () => {
             const allReservations = await getAll("3")
             setReservations(allReservations)
+
+
+            setReservations((current: Reservation[]) => {
+                return current
+            })
         }
         getReservations()
     }, []);
@@ -33,11 +37,15 @@ const Calendar = ({sauna}: Props) => {
     const dateFormatter = (count: number) => {
         const dateNow = currentDate.plus({days: count}).toString()
         const date = DateTime.fromISO(dateNow)
-        const shortForm = date.toISODate()
-        const datepParts = shortForm?.split('-')
-        const formattedDate = datepParts?.reverse().join('.')
-        return formattedDate
+        return date.toISODate()
     }   
+
+    const getReservationsOfTheDay = (formattedDate: string) => {
+        const date = formattedDate.split(' ')[1]
+        const date2 = date.split('-').reverse().join('-')
+        const reservationsOfTheDay = reservations.filter(r => r.Date.includes(date2))
+        return reservationsOfTheDay
+    }
 
     const handleClickNext = async (event: React.SyntheticEvent) => {
         event.preventDefault()
@@ -58,7 +66,12 @@ const Calendar = ({sauna}: Props) => {
         <h2>{sauna} varaukset</h2>
         <div className="d-flex flex-column flex-md-row">
             {Array.from({ length: DAYS_IN_WEEK }).map((_, index) => {
-                return <ReservationDayTable key={index} date={`${weekdays[index]} ${dateFormatter(index) ?? "?"}`} reservations={reservations} />
+                const rawFormattedDate = `${weekdays[index]} ${dateFormatter(index) ?? "?"}`
+                const reservationsOfTheDay = getReservationsOfTheDay(rawFormattedDate)
+                const dayParts = rawFormattedDate.split(' ')
+                const formattedDate = `${dayParts[0]} ${dayParts[1].split('-').reverse().join('.')}`
+       
+                return <ReservationDayTable key={index} setReservations={setReservations} date={formattedDate} reservations={reservationsOfTheDay} />
             })}
         </div>
 

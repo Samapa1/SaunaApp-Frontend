@@ -11,15 +11,21 @@ interface Reservation {
     Date: string
 }
 
-const makeReservation = async () => {
+const makeReservation = async (rawReservationData: string, setReservations: React.Dispatch<React.SetStateAction<Reservation[]>>) => {
     console.log("making reservation")
     const reservationData = {
         "sauna": "3",
-        "date": "07-11-2025-20"
+        "date": rawReservationData
     }
 
     const myReservation = await create(reservationData)
     console.log(myReservation)
+    setReservations((current: Reservation[]) => {
+        return current.concat({ 
+        "Id": "3",
+        "Date": rawReservationData
+    ,})
+    })    
 }
 
 const btn = {
@@ -30,8 +36,10 @@ const btn = {
     width: '5%',
 }
 
-const checkAvailability = (hour: string, reservations: Array<Reservation>) => {
+const checkAvailability = (hour: string, dateFormatted: string, reservations: Array<Reservation>, setReservations: React.Dispatch<React.SetStateAction<Reservation[]>>) => {
     const modified = reservations.map(r => r.Date)
+    const reservationRawData = `${dateFormatted}-${hour}`
+
     const reservedHours = modified.map(r => {
         const dateParts = r.split('-')
         const hours = dateParts[3]
@@ -41,17 +49,14 @@ const checkAvailability = (hour: string, reservations: Array<Reservation>) => {
         return "varattu"
     }
     else {
-        return <Button style={btn} onClick={() => makeReservation()}>vapaa</Button>
+        return <Button style={btn} onClick={() => makeReservation(reservationRawData, setReservations)}>vapaa</Button>
     }
 }
 
-function ReservationDayTable(props: { date: string, reservations: Array<Reservation> }) {
-    // console.log(props.reservations)
-    // console.log(props.date)
-    const dateFormatted = props.date.split(' ')
-    const dateFormatted2 = dateFormatted[1].split('.').join('-')
-    const reservations = props.reservations
-    const reservationsOfTheDay = reservations.filter(r => r.Date.includes(dateFormatted2))
+const ReservationDayTable = (props: { date: string, reservations: Array<Reservation>, setReservations: React.Dispatch<React.SetStateAction<Reservation[]>> }) => {
+    const dateParts = props.date.split(' ')
+    const dateFormatted = dateParts[1].split('.').join('-')
+    const reservationsOfTheDay = props.reservations
     
     return (
         <Container fluid>
@@ -60,7 +65,7 @@ function ReservationDayTable(props: { date: string, reservations: Array<Reservat
                 const hour = FIRST_HOUR + index;
                 return (
                     <Row className="p-2 border border-secondary" style={{ color: 'white', backgroundColor: hour % 2 === 0 ? "#212529" : "#2c3034" }} key={hour}>
-                        {hour}:00 {checkAvailability(hour.toString(), reservationsOfTheDay)}
+                        {hour}:00 {checkAvailability(hour.toString(), dateFormatted, reservationsOfTheDay, props.setReservations)}
                     </Row>
                 );
             })}
