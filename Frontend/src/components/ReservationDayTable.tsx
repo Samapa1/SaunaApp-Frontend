@@ -2,19 +2,14 @@ import React from "react";
 import { Container, Row, Button } from "react-bootstrap";
 
 import { create } from "../services/reservations";
+import type { Reservation } from "../types";
 
 const FIRST_HOUR = 17;
 const LAST_HOUR = 22;
 
-interface Reservation {
-    Id: string,
-    Date: string
-}
-
-const makeReservation = async (rawReservationData: string, setReservations: React.Dispatch<React.SetStateAction<Reservation[]>>) => {
-    console.log("making reservation")
+const makeReservation = async (rawReservationData: string, saunaNumber: string, setReservations: React.Dispatch<React.SetStateAction<Reservation[]>>) => {
     const reservationData = {
-        "sauna": "3",
+        "sauna": saunaNumber,
         "date": rawReservationData
     }
 
@@ -22,21 +17,20 @@ const makeReservation = async (rawReservationData: string, setReservations: Reac
     console.log(myReservation)
     setReservations((current: Reservation[]) => {
         return current.concat({ 
-        "Id": "3",
+        "Id": saunaNumber,
         "Date": rawReservationData
     ,})
     })    
 }
 
 const btn = {
-    // backgroundColor: '#2C3034',
     backgroundColor: 'transparent',
 	color: 'white',
     border: 'none',
     width: '5%',
 }
 
-const checkAvailability = (hour: string, dateFormatted: string, reservations: Array<Reservation>, setReservations: React.Dispatch<React.SetStateAction<Reservation[]>>) => {
+const checkAvailability = (hour: string, dateFormatted: string, saunaNumber: string, reservations: Array<Reservation>, setReservations: React.Dispatch<React.SetStateAction<Reservation[]>>) => {
     const modified = reservations.map(r => r.Date)
     const reservationRawData = `${dateFormatted}-${hour}`
 
@@ -46,14 +40,14 @@ const checkAvailability = (hour: string, dateFormatted: string, reservations: Ar
         return hours
     })
     if (reservedHours.find(h => h === hour)) {
-        return "varattu"
+        return <Button style={btn}>varattu</Button>
     }
     else {
-        return <Button style={btn} onClick={() => makeReservation(reservationRawData, setReservations)}>vapaa</Button>
+        return <Button style={btn} onClick={() => makeReservation(reservationRawData, saunaNumber, setReservations)}>vapaa</Button>
     }
 }
 
-const ReservationDayTable = (props: { date: string, reservations: Array<Reservation>, setReservations: React.Dispatch<React.SetStateAction<Reservation[]>> }) => {
+const ReservationDayTable = (props: { date: string, reservations: Array<Reservation>, saunaNumber: string, setReservations: React.Dispatch<React.SetStateAction<Reservation[]>> }) => {
     const dateParts = props.date.split(' ')
     const dateFormatted = dateParts[1].split('.').join('-')
     const reservationsOfTheDay = props.reservations
@@ -65,7 +59,7 @@ const ReservationDayTable = (props: { date: string, reservations: Array<Reservat
                 const hour = FIRST_HOUR + index;
                 return (
                     <Row className="p-2 border border-secondary" style={{ color: 'white', backgroundColor: hour % 2 === 0 ? "#212529" : "#2c3034" }} key={hour}>
-                        {hour}:00 {checkAvailability(hour.toString(), dateFormatted, reservationsOfTheDay, props.setReservations)}
+                        {hour}:00 {checkAvailability(hour.toString(), dateFormatted, props.saunaNumber, reservationsOfTheDay, props.setReservations)}
                     </Row>
                 );
             })}

@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { Button } from 'react-bootstrap'
 import { DateTime } from "luxon";
+
 import ReservationDayTable from './ReservationDayTable';
 import { getAll } from '../services/reservations';
+import type { Reservation } from '../types';
 
 interface Props {
   sauna: string
@@ -11,25 +13,16 @@ interface Props {
 
 const DAYS_IN_WEEK = 7
 
-interface Reservation {
-    Id: string,
-    Date: string
-}
-
 const Calendar = ({sauna}: Props) => {
     const [currentDate, setCurrentDate ] = useState<DateTime<true>>(DateTime.now().startOf('week'))
     const weekdays = ['Ma', 'Ti', 'Ke', 'To', 'Pe', 'La', 'Su']
     const [reservations, setReservations] = useState<Reservation[]>([]);
+    const saunaNumber = sauna.split(' ')[1]
 
     useEffect(() => {
         const getReservations = async () => {
-            const allReservations = await getAll("3")
+            const allReservations = await getAll(saunaNumber)
             setReservations(allReservations)
-
-
-            setReservations((current: Reservation[]) => {
-                return current
-            })
         }
         getReservations()
     }, []);
@@ -71,7 +64,7 @@ const Calendar = ({sauna}: Props) => {
                 const dayParts = rawFormattedDate.split(' ')
                 const formattedDate = `${dayParts[0]} ${dayParts[1].split('-').reverse().join('.')}`
        
-                return <ReservationDayTable key={index} setReservations={setReservations} date={formattedDate} reservations={reservationsOfTheDay} />
+                return <ReservationDayTable key={index} setReservations={setReservations} date={formattedDate} reservations={reservationsOfTheDay} saunaNumber={saunaNumber}/>
             })}
         </div>
 
