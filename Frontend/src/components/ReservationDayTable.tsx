@@ -27,7 +27,7 @@ const btn = {
     backgroundColor: 'transparent',
 	color: 'white',
     border: 'none',
-    width: '5%',
+    // width: '5%',
 }
 
 const checkAvailability = (hour: string, dateFormatted: string, saunaNumber: string, reservations: Array<Reservation>, setReservations: React.Dispatch<React.SetStateAction<Reservation[]>>) => {
@@ -40,7 +40,7 @@ const checkAvailability = (hour: string, dateFormatted: string, saunaNumber: str
         return hours
     })
     if (reservedHours.find(h => h === hour)) {
-        return <Button style={btn}>varattu</Button>
+        return <Button style={btn} disabled>varattu</Button>
     }
     else {
         return <Button style={btn} onClick={() => makeReservation(reservationRawData, saunaNumber, setReservations)}>vapaa</Button>
@@ -59,7 +59,10 @@ const ReservationDayTable = (props: { date: string, reservations: Array<Reservat
                 const hour = FIRST_HOUR + index;
                 return (
                     <Row className="p-2 border border-secondary" style={{ color: 'white', backgroundColor: hour % 2 === 0 ? "#212529" : "#2c3034" }} key={hour}>
-                        {hour}:00 {checkAvailability(hour.toString(), dateFormatted, props.saunaNumber, reservationsOfTheDay, props.setReservations)}
+                        <div style={{ display: "flex", flexFlow: "row"}}>
+                            <div>{hour}:00</div>
+                            <div>{checkAvailability(hour.toString(), dateFormatted, props.saunaNumber, reservationsOfTheDay, props.setReservations)}</div>
+                        </div>
                     </Row>
                 );
             })}
