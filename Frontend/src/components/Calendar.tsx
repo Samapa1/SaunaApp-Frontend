@@ -18,14 +18,15 @@ const Calendar = ({sauna}: Props) => {
     const weekdays = ['Ma', 'Ti', 'Ke', 'To', 'Pe', 'La', 'Su']
     const [reservations, setReservations] = useState<Reservation[]>([]);
     const saunaNumber = sauna.split(' ')[1]
-
+    
     useEffect(() => {
         const getReservations = async () => {
-            const allReservations = await getAll(saunaNumber)
-            setReservations(allReservations)
-        }
+                const dateData = `${currentDate.year}-${currentDate.month}-${currentDate.weekNumber}`
+                const allReservations = await getAll(saunaNumber, dateData)
+                setReservations(allReservations)
+            }
         getReservations()
-    }, []);
+    }, [currentDate]);
 
     const dateFormatter = (count: number) => {
         const dateNow = currentDate.plus({days: count}).toString()

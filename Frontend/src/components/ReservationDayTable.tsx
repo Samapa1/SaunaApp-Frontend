@@ -27,7 +27,6 @@ const btn = {
     backgroundColor: 'transparent',
 	color: 'white',
     border: 'none',
-    // width: '5%',
 }
 
 const checkAvailability = (hour: string, dateFormatted: string, saunaNumber: string, reservations: Array<Reservation>, setReservations: React.Dispatch<React.SetStateAction<Reservation[]>>) => {
