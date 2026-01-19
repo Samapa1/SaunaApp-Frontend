@@ -21,7 +21,7 @@ const Calendar = ({sauna}: Props) => {
     
     useEffect(() => {
         const getReservations = async () => {
-                const dateData = `${currentDate.year}-${currentDate.month}-${currentDate.weekNumber}`
+                const dateData = `${currentDate.weekYear}-${String(currentDate.month).padStart(2, '0')}-${currentDate.weekNumber}`
                 const allReservations = await getAll(saunaNumber, dateData)
                 setReservations(allReservations)
             }
@@ -31,7 +31,11 @@ const Calendar = ({sauna}: Props) => {
     const dateFormatter = (count: number) => {
         const dateNow = currentDate.plus({days: count}).toString()
         const date = DateTime.fromISO(dateNow)
-        return date.toISODate()
+        const isoDate = date.toISODate() ?? ''
+        const parts = isoDate.split('-')
+        const month = parts[1].padStart(2, '0')
+        const day = parts[2].padStart(2, '0')
+        return `${date.year}-${month}-${day}`
     }   
 
     const getReservationsOfTheDay = (formattedDate: string) => {

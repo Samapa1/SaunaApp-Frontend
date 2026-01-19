@@ -8,9 +8,7 @@ interface Reservation {
 }
 
 export const getAll = async (sauna: string, dateData: string) => {
-  console.log(sauna + dateData)
   const response = await axios.get(baseUrl + `/reservations?sauna=${sauna}&date=${dateData}`);
-  console.log(response.data)
   return response.data;
 };
 
