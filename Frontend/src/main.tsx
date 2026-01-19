@@ -4,8 +4,6 @@ import React from "react";
 import { AuthProvider } from "react-oidc-context";
 
 import App from './App.tsx'
-// import App from './cognito/app.tsx'
-
 
 const cognitoAuthConfig = {
   authority: "https://cognito-idp.eu-west-1.amazonaws.com/eu-west-1_qeIDiHinq",
