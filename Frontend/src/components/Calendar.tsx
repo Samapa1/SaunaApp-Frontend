@@ -18,19 +18,24 @@ const Calendar = ({sauna}: Props) => {
     const weekdays = ['Ma', 'Ti', 'Ke', 'To', 'Pe', 'La', 'Su']
     const [reservations, setReservations] = useState<Reservation[]>([]);
     const saunaNumber = sauna.split(' ')[1]
-
+    
     useEffect(() => {
         const getReservations = async () => {
-            const allReservations = await getAll(saunaNumber)
-            setReservations(allReservations)
-        }
+                const dateData = `${currentDate.weekYear}-${String(currentDate.month).padStart(2, '0')}-${currentDate.weekNumber}`
+                const allReservations = await getAll(saunaNumber, dateData)
+                setReservations(allReservations)
+            }
         getReservations()
-    }, []);
+    }, [currentDate]);
 
     const dateFormatter = (count: number) => {
         const dateNow = currentDate.plus({days: count}).toString()
         const date = DateTime.fromISO(dateNow)
-        return date.toISODate()
+        const isoDate = date.toISODate() ?? ''
+        const parts = isoDate.split('-')
+        const month = parts[1].padStart(2, '0')
+        const day = parts[2].padStart(2, '0')
+        return `${date.year}-${month}-${day}`
     }   
 
     const getReservationsOfTheDay = (formattedDate: string) => {

@@ -7,27 +7,25 @@ import type { Reservation } from "../types";
 const FIRST_HOUR = 17;
 const LAST_HOUR = 22;
 
+const btn = {
+    backgroundColor: 'transparent',
+	color: 'white',
+    border: 'none',
+}
+
 const makeReservation = async (rawReservationData: string, saunaNumber: string, setReservations: React.Dispatch<React.SetStateAction<Reservation[]>>) => {
     const reservationData = {
         "sauna": saunaNumber,
         "date": rawReservationData
     }
 
-    const myReservation = await create(reservationData)
-    console.log(myReservation)
+    await create(reservationData)
     setReservations((current: Reservation[]) => {
         return current.concat({ 
         "Id": saunaNumber,
         "Date": rawReservationData
     ,})
     })    
-}
-
-const btn = {
-    backgroundColor: 'transparent',
-	color: 'white',
-    border: 'none',
-    // width: '5%',
 }
 
 const checkAvailability = (hour: string, dateFormatted: string, saunaNumber: string, reservations: Array<Reservation>, setReservations: React.Dispatch<React.SetStateAction<Reservation[]>>) => {
