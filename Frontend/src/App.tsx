@@ -8,9 +8,9 @@ function App() {
 
   const signOutRedirect = () => {
     auth.removeUser()
-    const clientId = "3j48smp8k3nq09m6dk2ar2m6fl";
-    const logoutUri = import.meta.env.LOGOUT_URL;
-    const cognitoDomain = import.meta.env.COGNITO_DOMAIN;
+    const clientId = import.meta.env.VITE_CLIENT_ID;
+    const logoutUri = import.meta.env.VITE_REDIRECT_URL;
+    const cognitoDomain = import.meta.env.VITE_COGNITO_DOMAIN;
     window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
   };
 
