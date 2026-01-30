@@ -9,11 +9,12 @@ import type { Reservation } from '../types';
 
 interface Props {
   sauna: string
+  token: string
 }
 
 const DAYS_IN_WEEK = 7
 
-const Calendar = ({sauna}: Props) => {
+const Calendar = ({sauna, token}: Props) => {
     const [currentDate, setCurrentDate ] = useState<DateTime<true>>(DateTime.now().startOf('week'))
     const weekdays = ['Ma', 'Ti', 'Ke', 'To', 'Pe', 'La', 'Su']
     const [reservations, setReservations] = useState<Reservation[]>([]);
@@ -22,7 +23,7 @@ const Calendar = ({sauna}: Props) => {
     useEffect(() => {
         const getReservations = async () => {
                 const dateData = `${currentDate.weekYear}-${String(currentDate.month).padStart(2, '0')}-${currentDate.weekNumber}`
-                const allReservations = await getAll(saunaNumber, dateData)
+                const allReservations = await getAll(saunaNumber, dateData, token)
                 setReservations(allReservations)
             }
         getReservations()

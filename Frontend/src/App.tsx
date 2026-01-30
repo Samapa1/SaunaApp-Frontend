@@ -22,16 +22,18 @@ function App() {
     return <div>Encountering error... {auth.error.message}</div>;
   }
 
-  if (auth.isAuthenticated) {
+  if (auth.isAuthenticated && auth.user) {
+    const token = auth.user.access_token;
+
     return(
       <div>
         <Routes>
             <Route path='/' element={<Home/>} />
-            <Route path='/sauna1' element={<Calendar sauna={"Sauna 1"}/>} />
-            <Route path='/sauna2' element={<Calendar sauna={"Sauna 2"}/>} />
-            <Route path='/sauna3' element={<Calendar sauna={"Sauna 3"}/>} />
-            <Route path='/sauna4' element={<Calendar sauna={"Sauna 4"}/>} />
-            <Route path='/sauna5' element={<Calendar sauna={"Sauna 5"}/>} />
+            <Route path='/sauna1' element={<Calendar sauna={"Sauna 1"} token={token}/>} />
+            <Route path='/sauna2' element={<Calendar sauna={"Sauna 2"} token={token}/>} />
+            <Route path='/sauna3' element={<Calendar sauna={"Sauna 3"} token={token}/>} />
+            <Route path='/sauna4' element={<Calendar sauna={"Sauna 4"} token={token}/>} />
+            <Route path='/sauna5' element={<Calendar sauna={"Sauna 5"} token={token}/>} />
             <Route path="*" element={<Home/>} />
         </Routes>
         <button onClick={() => signOutRedirect()}>Sign out</button>

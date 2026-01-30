@@ -13,7 +13,6 @@ const cognitoAuthConfig = {
   scope: "email openid phone",
 };
 
-
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
