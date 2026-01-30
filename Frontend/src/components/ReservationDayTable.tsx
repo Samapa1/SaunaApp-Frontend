@@ -3,6 +3,7 @@ import { Container, Row, Button } from "react-bootstrap";
 
 import { create } from "../services/reservations";
 import type { Reservation } from "../types";
+import { useAuth } from "react-oidc-context";
 
 const FIRST_HOUR = 17;
 const LAST_HOUR = 22;
@@ -13,13 +14,13 @@ const btn = {
     border: 'none',
 }
 
-const makeReservation = async (rawReservationData: string, saunaNumber: string, setReservations: React.Dispatch<React.SetStateAction<Reservation[]>>) => {
+const makeReservation = async (rawReservationData: string, saunaNumber: string, setReservations: React.Dispatch<React.SetStateAction<Reservation[]>>, token: string) => {
     const reservationData = {
         "sauna": saunaNumber,
         "date": rawReservationData
     }
 
-    await create(reservationData)
+    await create(reservationData, token)
     setReservations((current: Reservation[]) => {
         return current.concat({ 
         "Id": saunaNumber,
@@ -28,7 +29,7 @@ const makeReservation = async (rawReservationData: string, saunaNumber: string, 
     })    
 }
 
-const checkAvailability = (hour: string, dateFormatted: string, saunaNumber: string, reservations: Array<Reservation>, setReservations: React.Dispatch<React.SetStateAction<Reservation[]>>) => {
+const checkAvailability = (hour: string, dateFormatted: string, saunaNumber: string, reservations: Array<Reservation>, setReservations: React.Dispatch<React.SetStateAction<Reservation[]>>, token: string) => {
     const modified = reservations.map(r => r.Date)
     const reservationRawData = `${dateFormatted}-${hour}`
 
@@ -41,7 +42,7 @@ const checkAvailability = (hour: string, dateFormatted: string, saunaNumber: str
         return <Button style={btn} disabled>varattu</Button>
     }
     else {
-        return <Button style={btn} onClick={() => makeReservation(reservationRawData, saunaNumber, setReservations)}>vapaa</Button>
+        return <Button style={btn} onClick={() => makeReservation(reservationRawData, saunaNumber, setReservations, token)}>vapaa</Button>
     }
 }
 
@@ -49,6 +50,9 @@ const ReservationDayTable = (props: { date: string, reservations: Array<Reservat
     const dateParts = props.date.split(' ')
     const dateFormatted = dateParts[1].split('.').join('-')
     const reservationsOfTheDay = props.reservations
+
+    const auth = useAuth();
+    const token = auth.user?.access_token || ''
     
     return (
         <Container fluid>
@@ -59,7 +63,7 @@ const ReservationDayTable = (props: { date: string, reservations: Array<Reservat
                     <Row className="p-2 border border-secondary" style={{ color: 'white', backgroundColor: hour % 2 === 0 ? "#212529" : "#2c3034" }} key={hour}>
                         <div style={{ display: "flex", flexFlow: "row"}}>
                             <div>{hour}:00</div>
-                            <div>{checkAvailability(hour.toString(), dateFormatted, props.saunaNumber, reservationsOfTheDay, props.setReservations)}</div>
+                            <div>{checkAvailability(hour.toString(), dateFormatted, props.saunaNumber, reservationsOfTheDay, props.setReservations, token)}</div>
                         </div>
                     </Row>
                 );
