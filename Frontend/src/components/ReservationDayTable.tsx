@@ -5,6 +5,13 @@ import { create } from "../services/reservations";
 import type { Reservation } from "../types";
 import { useAuth } from "react-oidc-context";
 
+interface ReservationDayTableProps {
+  date: string;
+  reservations: Reservation[];
+  saunaNumber: string;
+  setReservations: React.Dispatch<React.SetStateAction<Reservation[]>>;
+}
+
 const FIRST_HOUR = 17;
 const LAST_HOUR = 22;
 
@@ -48,7 +55,7 @@ const checkAvailability = (hour: string, dateFormatted: string, saunaNumber: str
     }
 }
 
-const ReservationDayTable = (props: { date: string, reservations: Array<Reservation>, saunaNumber: string, setReservations: React.Dispatch<React.SetStateAction<Reservation[]>> }) => {
+const ReservationDayTable = (props: ReservationDayTableProps) => {
     const dateParts = props.date.split(' ')
     const dateFormatted = dateParts[1].split('.').join('-')
     const reservationsOfTheDay = props.reservations
