@@ -24,25 +24,27 @@ const makeReservation = async (rawReservationData: string, saunaNumber: string, 
     setReservations((current: Reservation[]) => {
         return current.concat({ 
         "Id": saunaNumber,
-        "Date": rawReservationData
-    ,})
+        "Date": rawReservationData,
+        "isOwnReservation": true
+        })
     })    
 }
 
 const checkAvailability = (hour: string, dateFormatted: string, saunaNumber: string, reservations: Array<Reservation>, setReservations: React.Dispatch<React.SetStateAction<Reservation[]>>, token: string) => {
-    const modified = reservations.map(r => r.Date)
-    const reservationRawData = `${dateFormatted}-${hour}`
-
-    const reservedHours = modified.map(r => {
-        const dateParts = r.split('-')
+    const newReservationData = `${dateFormatted}-${hour}`
+    const reservedHours = reservations.map(r => {
+        const dateParts = r.Date.split('-')
         const hours = dateParts[3]
-        return hours
+        return ({...r, Date: hours })
     })
-    if (reservedHours.find(h => h === hour)) {
+    
+    if (reservedHours.find(h => h.Date === hour && h.isOwnReservation === true)) {
+        return <Button style={btn} disabled>oma varaus</Button>
+    } else if (reservedHours.find(h => h.Date === hour)) {
         return <Button style={btn} disabled>varattu</Button>
     }
     else {
-        return <Button style={btn} onClick={() => makeReservation(reservationRawData, saunaNumber, setReservations, token)}>vapaa</Button>
+        return <Button style={btn} onClick={() => makeReservation(newReservationData, saunaNumber, setReservations, token)}>vapaa</Button>
     }
 }
 

@@ -1,4 +1,5 @@
 export interface Reservation {
     Id: string,
-    Date: string
+    Date: string,
+    isOwnReservation?: boolean
 }
