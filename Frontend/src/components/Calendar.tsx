@@ -6,6 +6,7 @@ import { DateTime } from "luxon";
 import ReservationDayTable from './ReservationDayTable';
 import { getAll } from '../services/reservations';
 import type { Reservation } from '../types';
+import { useAuth } from 'react-oidc-context';
 
 interface Props {
   sauna: string
@@ -13,16 +14,19 @@ interface Props {
 
 const DAYS_IN_WEEK = 7
 
-const Calendar = ({sauna}: Props) => {
+const Calendar = ({sauna }: Props) => {
     const [currentDate, setCurrentDate ] = useState<DateTime<true>>(DateTime.now().startOf('week'))
     const weekdays = ['Ma', 'Ti', 'Ke', 'To', 'Pe', 'La', 'Su']
     const [reservations, setReservations] = useState<Reservation[]>([]);
     const saunaNumber = sauna.split(' ')[1]
+
+    const auth = useAuth();
+    const token = auth.user?.access_token || ''
     
     useEffect(() => {
         const getReservations = async () => {
                 const dateData = `${currentDate.weekYear}-${String(currentDate.month).padStart(2, '0')}-${currentDate.weekNumber}`
-                const allReservations = await getAll(saunaNumber, dateData)
+                const allReservations = await getAll(saunaNumber, dateData, token)
                 setReservations(allReservations)
             }
         getReservations()

@@ -22,7 +22,9 @@ function App() {
     return <div>Encountering error... {auth.error.message}</div>;
   }
 
-  if (auth.isAuthenticated) {
+  if (auth.isAuthenticated && auth.user) {
+    const token = auth.user.access_token;
+
     return(
       <div>
         <Routes>
