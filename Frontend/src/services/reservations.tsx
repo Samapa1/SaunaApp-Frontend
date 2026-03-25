@@ -21,3 +21,11 @@ export const create = async (reservation: Reservation, token: string) => {
   });
   return response.data;
 };
+
+export const deleteReservation = async (sauna: string, dateData: string, token: string) => {
+  console.log('deleting reservation', sauna, dateData)
+  const response = await axios.delete(baseUrl + `/reservation?sauna=${sauna}&date=${dateData}   `, {
+    headers: { Authorization: token },
+  });
+  return response.data;
+};
