@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router-dom';
 import { useAuth } from "react-oidc-context";
 import Calendar from "./components/Calendar"
 import Home from './components/Home';
+import OwnReservations from './components/OwnReservations';
 
 function App() {
   const auth = useAuth();
@@ -29,6 +30,7 @@ function App() {
       <div>
         <Routes>
             <Route path='/' element={<Home/>} />
+            <Route path='/reservations' element={<OwnReservations/>} />
             <Route path='/sauna1' element={<Calendar sauna={"Sauna 1"}/>} />
             <Route path='/sauna2' element={<Calendar sauna={"Sauna 2"}/>} />
             <Route path='/sauna3' element={<Calendar sauna={"Sauna 3"}/>} />
