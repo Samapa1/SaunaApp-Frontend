@@ -9,15 +9,20 @@ import type { Reservation } from '../types';
 import { useAuth } from 'react-oidc-context';
 
 interface Props {
-  sauna: string
+  sauna: string,
+  reservations: Reservation[],
+  setReservations: React.Dispatch<React.SetStateAction<Reservation[]>>;
+  showDeleteReservation: boolean,
+  setShowDeleteReservation: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const DAYS_IN_WEEK = 7
 
-const Calendar = ({sauna }: Props) => {
+const Calendar = ({sauna, reservations, setReservations, showDeleteReservation, setShowDeleteReservation }: Props) => {
     const [currentDate, setCurrentDate ] = useState<DateTime<true>>(DateTime.now().startOf('week'))
+    const [reservedHour, setReservedHour] = useState('')
+    const [reservedDate, setReservedDate] = useState('')
     const weekdays = ['Ma', 'Ti', 'Ke', 'To', 'Pe', 'La', 'Su']
-    const [reservations, setReservations] = useState<Reservation[]>([]);
     const saunaNumber = sauna.split(' ')[1]
 
     const auth = useAuth();
@@ -73,7 +78,7 @@ const Calendar = ({sauna }: Props) => {
                 const dayParts = rawFormattedDate.split(' ')
                 const formattedDate = `${dayParts[0]} ${dayParts[1].split('-').reverse().join('.')}`
        
-                return <ReservationDayTable key={index} setReservations={setReservations} date={formattedDate} reservations={reservationsOfTheDay} saunaNumber={saunaNumber}/>
+                return <ReservationDayTable key={index} setReservations={setReservations} date={formattedDate} reservations={reservationsOfTheDay} saunaNumber={saunaNumber} showDeleteReservation={showDeleteReservation} setShowDeleteReservation={setShowDeleteReservation} reservedHour={reservedHour} setReservedHour={setReservedHour} reservedDate={reservedDate} setReservedDate={setReservedDate}/>
             })}
         </div>
 
