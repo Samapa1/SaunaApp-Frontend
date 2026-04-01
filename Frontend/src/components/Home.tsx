@@ -1,7 +1,7 @@
  import { Link } from "react-router-dom";
  import ListGroup from 'react-bootstrap/ListGroup';
-
- const Home = () => {
+ 
+ const Home = () => {   
    return (
         <ListGroup>
           <ListGroup.Item><Link to="/">Home</Link></ListGroup.Item>

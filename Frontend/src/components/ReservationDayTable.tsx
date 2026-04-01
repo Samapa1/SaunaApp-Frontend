@@ -13,6 +13,12 @@ interface ReservationDayTableProps {
   reservations: Reservation[];
   saunaNumber: string;
   setReservations: React.Dispatch<React.SetStateAction<Reservation[]>>;
+  showDeleteReservation: boolean;
+  setShowDeleteReservation: React.Dispatch<React.SetStateAction<boolean>>;
+  reservedHour: string;
+  setReservedHour: React.Dispatch<React.SetStateAction<string>>;
+  reservedDate: string;
+  setReservedDate: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const FIRST_HOUR = 17;
@@ -40,75 +46,81 @@ const makeReservation = async (rawReservationData: string, saunaNumber: string, 
     })    
 }
 
-const checkAvailability = (
-    hour: string, 
-    dateFormatted: string, 
-    saunaNumber: string, 
-    reservations: Array<Reservation>, 
-    setReservations: React.Dispatch<React.SetStateAction<Reservation[]>>, 
-    token: string,
-    setShowReservation: React.Dispatch<React.SetStateAction<boolean>>, 
-    setReservedHour: React.Dispatch<React.SetStateAction<string>>
-) => {
-    const newReservationData = `${dateFormatted}-${hour}`
-    const reservedHours = reservations.map(r => {
-        const dateParts = r.Date.split('-')
-        const hours = dateParts[3]
-        return ({...r, Date: hours })
-    })
-    
-    const handleShowReservation = (setReservedHour: React.Dispatch<React.SetStateAction<string>>, hour: string, setShowReservation: React.Dispatch<React.SetStateAction<boolean>>) => {
-        setReservedHour(hour)
-        setShowReservation(true)
-        return
-    }
-
-    if (reservedHours.find(h => h.Date === hour && h.isOwnReservation === true)) {
-        return (
-             <div style={{ display: 'flex', alignItems: 'center'}}>
-                <Button style={btn} disabled>oma varaus</Button>
-                <Button style={{ ...btn, padding: '0px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => handleShowReservation(setReservedHour, hour, setShowReservation)}>×</Button>
-            </div>
-        )
-    } else if (reservedHours.find(h => h.Date === hour)) {
-        return <Button style={btn} disabled>varattu</Button>
-    }
-    else {
-        return <Button style={btn} onClick={() => makeReservation(newReservationData, saunaNumber, setReservations, token)}>vapaa</Button>
-    }
-}
-
-const ReservationDayTable = (props: ReservationDayTableProps) => {
-    const [showReservation, setShowReservation] = useState(false)
-    const [reservedHour, setReservedHour] = useState('')
-    const date = props.date
-    const dateParts = props.date.split(' ')
+const ReservationDayTable = ({ 
+    date: dateInput,
+    reservations: reservationsOfTheDay,
+    saunaNumber,
+    setReservations,
+    showDeleteReservation,
+    setShowDeleteReservation,
+    reservedHour,
+    setReservedHour,
+    reservedDate,
+    setReservedDate
+}: ReservationDayTableProps) => {
+    const date = dateInput
+    const dateParts = date.split(' ')
     const dateFormatted = dateParts[1].split('.').join('-')
-    const reservationsOfTheDay = props.reservations
-    const saunaNumber = props.saunaNumber
-    
 
     const auth = useAuth();
     const token = auth.user?.access_token || ''
+
+    const checkAvailability = (
+        hour: string, 
+        dateFormatted: string, 
+        saunaNumber: string, 
+        reservations: Array<Reservation>, 
+        setReservations: React.Dispatch<React.SetStateAction<Reservation[]>>, 
+        token: string,
+        setReservedHour: React.Dispatch<React.SetStateAction<string>>
+    ) => {
+        const newReservationData = `${dateFormatted}-${hour}`
+        const reservedHours = reservations.map(r => {
+            const dateParts = r.Date.split('-')
+            const hours = dateParts[3]
+            return ({...r, Date: hours })
+        })
+        
+        const handleShowReservation = (hour: string) => {
+            setReservedHour(hour)
+            setReservedDate(date)
+            setShowDeleteReservation(true)
+            return
+        }
+
+        if (reservedHours.find(h => h.Date === hour && h.isOwnReservation === true)) {
+            return (
+                 <div style={{ display: 'flex', alignItems: 'center'}}>
+                    <Button style={btn} disabled>oma varaus</Button>
+                    <Button style={{ ...btn, padding: '0px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => handleShowReservation(hour)}>×</Button>
+                </div>
+            )
+        } else if (reservedHours.find(h => h.Date === hour)) {
+            return <Button style={btn} disabled>varattu</Button>
+        }
+        else {
+            return <Button style={btn} onClick={() => makeReservation(newReservationData, saunaNumber, setReservations, token)}>vapaa</Button>
+        }
+    }
     
     return (
         <Container fluid>
-             {showReservation ? <ReservationData 
-                setShowReservation={setShowReservation} 
+             {showDeleteReservation ? <ReservationData 
+                setShowDeleteReservation={setShowDeleteReservation} 
                 saunaNumber={saunaNumber}
-                date={date}
+                date={reservedDate}
                 reservedHour={reservedHour}
                 token={token}
-                setReservations={props.setReservations}
+                setReservations={setReservations}
             /> : null}
-            <Row className="p-2 border border-secondary" style={{ color: 'white', fontWeight: 'bold', backgroundColor: "#212529" }}>{props.date}</Row>
+            <Row className="p-2 border border-secondary" style={{ color: 'white', fontWeight: 'bold', backgroundColor: "#212529" }}>{date}</Row>
             {Array.from({ length: LAST_HOUR - FIRST_HOUR + 1 }, (_, index) => {
                 const hour = FIRST_HOUR + index;
                 return (
                     <Row className="p-2 border border-secondary" style={{ color: 'white', backgroundColor: hour % 2 === 0 ? "#212529" : "#2c3034" }} key={hour}>
                         <div style={{ display: "flex", flexFlow: "row"}}>
                             <div>{hour}:00</div>
-                            <div>{checkAvailability(hour.toString(), dateFormatted, props.saunaNumber, reservationsOfTheDay, props.setReservations, token, setShowReservation, setReservedHour)}</div>
+                            <div>{checkAvailability(hour.toString(), dateFormatted, saunaNumber, reservationsOfTheDay, setReservations, token, setReservedHour)}</div>
                         </div>
                     </Row>
                 );

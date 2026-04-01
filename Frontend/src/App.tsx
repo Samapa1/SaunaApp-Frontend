@@ -3,9 +3,13 @@ import { useAuth } from "react-oidc-context";
 import Calendar from "./components/Calendar"
 import Home from './components/Home';
 import OwnReservations from './components/OwnReservations';
+import type { Reservation } from './types';
+import { useState } from 'react';
 
 function App() {
   const auth = useAuth();
+  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [showDeleteReservation, setShowDeleteReservation] = useState(false)
 
   const signOutRedirect = () => {
     auth.removeUser()
@@ -31,11 +35,11 @@ function App() {
         <Routes>
             <Route path='/' element={<Home/>} />
             <Route path='/reservations' element={<OwnReservations/>} />
-            <Route path='/sauna1' element={<Calendar sauna={"Sauna 1"}/>} />
-            <Route path='/sauna2' element={<Calendar sauna={"Sauna 2"}/>} />
-            <Route path='/sauna3' element={<Calendar sauna={"Sauna 3"}/>} />
-            <Route path='/sauna4' element={<Calendar sauna={"Sauna 4"}/>} />
-            <Route path='/sauna5' element={<Calendar sauna={"Sauna 5"}/>} />
+            <Route path='/sauna1' element={<Calendar sauna={"Sauna 1"} reservations={reservations} setReservations={setReservations} showDeleteReservation={showDeleteReservation} setShowDeleteReservation={setShowDeleteReservation}/>} />
+            <Route path='/sauna2' element={<Calendar sauna={"Sauna 2"} reservations={reservations} setReservations={setReservations} showDeleteReservation={showDeleteReservation} setShowDeleteReservation={setShowDeleteReservation}/>} />
+            <Route path='/sauna3' element={<Calendar sauna={"Sauna 3"} reservations={reservations} setReservations={setReservations} showDeleteReservation={showDeleteReservation} setShowDeleteReservation={setShowDeleteReservation}/>} />
+            <Route path='/sauna4' element={<Calendar sauna={"Sauna 4"} reservations={reservations} setReservations={setReservations} showDeleteReservation={showDeleteReservation} setShowDeleteReservation={setShowDeleteReservation}/>} />
+            <Route path='/sauna5' element={<Calendar sauna={"Sauna 5"} reservations={reservations} setReservations={setReservations} showDeleteReservation={showDeleteReservation} setShowDeleteReservation={setShowDeleteReservation}/>} />
             <Route path="*" element={<Home/>} />
         </Routes>
         <button onClick={() => signOutRedirect()}>Sign out</button>

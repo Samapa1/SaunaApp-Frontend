@@ -6,9 +6,9 @@ import { deleteReservation } from '../services/reservations';
 import type { Reservation } from '../types';
 
 const ReservationData = (props?: {
-  setShowReservation?: React.Dispatch<React.SetStateAction<boolean>>,
+  setShowDeleteReservation?: React.Dispatch<React.SetStateAction<boolean>>,
   saunaNumber?: string,
-  date: string,
+  date?: string, 
   reservedHour?: string,
   setReservations?: React.Dispatch<React.SetStateAction<Reservation[]>>,
   token?: string
@@ -17,8 +17,8 @@ const ReservationData = (props?: {
 
   const handleClose = () => {
     setShow(false);
-    if (props?.setShowReservation) {
-      props.setShowReservation(false);
+    if (props?.setShowDeleteReservation) {
+      props.setShowDeleteReservation(false);
     }
   };
 

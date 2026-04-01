@@ -33,7 +33,6 @@ export const create = async (reservation: Reservation, token: string) => {
 };
 
 export const deleteReservation = async (sauna: string, dateData: string, token: string) => {
-  console.log('deleting reservation', sauna, dateData)
   const response = await axios.delete(baseUrl + `/reservation?sauna=${sauna}&date=${dateData}   `, {
     // headers: { "x-authorization": token },
     headers: { Authorization: token },
