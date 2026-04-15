@@ -24,7 +24,6 @@ const OwnReservations = () => {
   const [reservedHour, setReservedHour] = useState('');
   const [reservedDate, setReservedDate] = useState('');
   const [selectedSaunaId, setSelectedSaunaId] = useState('');
-  const [rawReservationDate, setRawReservationDate] = useState('');
   const auth = useAuth();
   const token = auth.user?.access_token || '';
 
@@ -33,7 +32,6 @@ const OwnReservations = () => {
       const currentDate = DateTime.now();
       const dateData = `${currentDate.weekYear}-${String(currentDate.month).padStart(2, '0')}`;
       const data = await getOwnReservations(token, dateData);
-      console.log(data, "own reservations data");
       setReservations(data);
       setIsLoading(false);
     };
@@ -43,11 +41,10 @@ const OwnReservations = () => {
     }
   }, [token]);
 
-  const handleDeleteClick = (date: string, hours: string, saunaId: string, rawDate: string) => {
+  const handleDeleteClick = (date: string, hours: string, saunaId: string) => {
     setReservedHour(hours);
     setReservedDate(date);
     setSelectedSaunaId(saunaId);
-    setRawReservationDate(rawDate);
     setShowDeleteReservation(true);
   };
 
@@ -74,7 +71,7 @@ const OwnReservations = () => {
 
   const renderReservation = (reservation: Reservation, index: number, isUpcoming: boolean) => {
     const { day, month, year, hours } = parseReservationDateTime(reservation.Date);
-    const dateWithoutHours = `${String(day).padStart(2, '0')}.${String(month).padStart(2, '0')}.${year}`;
+    const dateWithoutHours = `${day}.${month}.${year}`;
     const isoDate = DateTime.fromObject({ year, month, day }).toISODate() ?? ' ';
     const dateObj = DateTime.fromISO(isoDate);
     const dayName = weekdays[dateObj.weekday - 1];
@@ -88,7 +85,7 @@ const OwnReservations = () => {
             <Button
               variant="primary"
               size="sm"
-              onClick={() => handleDeleteClick(dateWithWeekday, hours, reservation.Id, reservation.Date)}
+              onClick={() => handleDeleteClick(dateWithWeekday, hours, reservation.Id)}
               style={{ padding: '2px 8px', fontSize: '14px' }}
             >
               ×
@@ -101,7 +98,6 @@ const OwnReservations = () => {
 
   const renderSection = (title: string, list: Reservation[], isUpcoming: boolean) => {
     const grouped = groupBySauna(list);
-    console.log(grouped, "grouped reservations");
     const saunaIds = Object.keys(grouped).sort();
     if (saunaIds.length === 0) return null;
     return (
@@ -122,11 +118,10 @@ const OwnReservations = () => {
   return (
     <>
       <h1>Omat varaukset</h1>
-      {showDeleteReservation ? <ReservationData
-        setShowDeleteReservation={setShowDeleteReservation}
+      {showDeleteReservation ? <ReservationData 
+        setShowReservation={setShowDeleteReservation}
         saunaNumber={selectedSaunaId}
         date={reservedDate}
-        rawDate={rawReservationDate}
         reservedHour={reservedHour}
         token={token}
         setReservations={setReservations}

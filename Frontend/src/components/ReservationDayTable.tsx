@@ -105,7 +105,7 @@ const ReservationDayTable = ({
     return (
         <Container fluid>
              {showDeleteReservation ? <ReservationData 
-                setShowDeleteReservation={setShowDeleteReservation} 
+                setShowReservation={setShowDeleteReservation} 
                 saunaNumber={saunaNumber}
                 date={reservedDate}
                 reservedHour={reservedHour}
