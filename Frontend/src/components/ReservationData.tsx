@@ -8,7 +8,8 @@ import type { Reservation } from '../types';
 const ReservationData = (props?: {
   setShowDeleteReservation?: React.Dispatch<React.SetStateAction<boolean>>,
   saunaNumber?: string,
-  date?: string, 
+  date?: string,
+  rawDate?: string,
   reservedHour?: string,
   setReservations?: React.Dispatch<React.SetStateAction<Reservation[]>>,
   token?: string
@@ -23,12 +24,13 @@ const ReservationData = (props?: {
   };
 
   const handleDeleteReservation = async () => {
-    if (props?.date && props?.saunaNumber && props?.token && props?.setReservations) {
-        const dateParts = props.date.split(' ')
-        const dateFormatted = `${dateParts[1].split('.').reverse().join('-')}-${props.reservedHour}`
+    if (props?.rawDate && props?.saunaNumber && props?.token && props?.setReservations) {
+        // rawDate format from backend: "day-month-year-hours" e.g. "5-4-2026-14"
+        const parts = props.rawDate.split('-');
+        const dateFormatted = `${parts[2]}-${parts[1]}-${parts[0]}-${parts[3]}`;
         const result = await deleteReservation(props.saunaNumber, dateFormatted, props.token)
         props.setReservations((current: Reservation[]) => {
-            return current.filter(r => r.Date !== `${dateParts[1].split('.').join('-')}-${props.reservedHour}`)
+            return current.filter(r => r.Date !== props.rawDate)
         })
         console.log(result)
         handleClose()
