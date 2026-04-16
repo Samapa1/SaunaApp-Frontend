@@ -12,8 +12,8 @@ const parseReservationDateTime = (dateStr: string) => {
   const dateParts = dateStr.split('-');
   const hours = dateParts[dateParts.length - 1];
   const year = Number(dateParts[2]);
-  const month = Number(dateParts[1].padStart(2, '0'));
-  const day = Number(dateParts[0].padStart(2, '0'));
+  const month = Number(dateParts[1]);
+  const day = Number(dateParts[0]);
   return { day, month, year, hours };
 };
 
