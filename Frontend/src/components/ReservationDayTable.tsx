@@ -1,5 +1,4 @@
 import React from "react";
-import { useState } from "react";
 import { Container, Row, Button } from "react-bootstrap";
 import { useAuth } from "react-oidc-context";
 
@@ -106,7 +105,7 @@ const ReservationDayTable = ({
     return (
         <Container fluid>
              {showDeleteReservation ? <ReservationData 
-                setShowDeleteReservation={setShowDeleteReservation} 
+                setShowReservation={setShowDeleteReservation} 
                 saunaNumber={saunaNumber}
                 date={reservedDate}
                 reservedHour={reservedHour}
