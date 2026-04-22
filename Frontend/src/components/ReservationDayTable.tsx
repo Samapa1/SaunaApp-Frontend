@@ -1,6 +1,7 @@
 import React from "react";
 import { Container, Row, Button } from "react-bootstrap";
 import { useAuth } from "react-oidc-context";
+import { DateTime } from "luxon";
 
 import { create } from "../services/reservations";
 import type { Reservation } from "../types";
@@ -74,6 +75,9 @@ const ReservationDayTable = ({
         setReservedHour: React.Dispatch<React.SetStateAction<string>>
     ) => {
         const newReservationData = `${dateFormatted}-${hour}`
+        const [dd, mm, yyyy] = dateFormatted.split('-').map(Number);
+        const slotDateTime = DateTime.fromObject({ year: yyyy, month: mm, day: dd, hour: parseInt(hour) }, { zone: 'Europe/Helsinki' });
+        const isPast = slotDateTime < DateTime.now().setZone('Europe/Helsinki');
         const reservedHours = reservations.map(r => {
             const dateParts = r.Date.split('-')
             const hours = dateParts[3]
@@ -91,14 +95,14 @@ const ReservationDayTable = ({
             return (
                  <div style={{ display: 'flex', alignItems: 'center'}}>
                     <Button style={btn} disabled>oma varaus</Button>
-                    <Button style={{ ...btn, padding: '0px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => handleShowReservation(hour)}>×</Button>
+                    {!isPast && <Button style={{ ...btn, padding: '0px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => handleShowReservation(hour)}>×</Button>}
                 </div>
             )
         } else if (reservedHours.find(h => h.Date === hour)) {
             return <Button style={btn} disabled>varattu</Button>
         }
         else {
-            return <Button style={btn} onClick={() => makeReservation(newReservationData, saunaNumber, setReservations, token)}>vapaa</Button>
+            return <Button style={btn} disabled={isPast} onClick={() => makeReservation(newReservationData, saunaNumber, setReservations, token)}>vapaa</Button>
         }
     }
     
