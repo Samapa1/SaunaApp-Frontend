@@ -9,9 +9,8 @@ interface Reservation {
 
 
 export const getAll = async (sauna: string, dateData: string, token: string) => {
-  console.log(token, "token in getAll");
   const response = await axios.get(baseUrl + `/reservations?sauna=${sauna}&date=${dateData}`, {
-    headers: { Authorization: token },
+    headers: { authorization: token },
   });
   return response.data;
 };
